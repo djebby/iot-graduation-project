@@ -1,7 +1,7 @@
 import React from 'react';
 import {Routes, Route} from "react-router-dom";
 
-import Home from "./pages/Home";
+import TrackingInput from './Components/TrackingInput';
 import Login from "./pages/Login";
 import AddPackage from "./pages/AddPackage";
 import DeletePackage from "./pages/DeletePackage";
@@ -12,7 +12,7 @@ import './App.css';
 const  App: React.FC = (): JSX.Element => {
   return (
     <Routes>
-      <Route path="/" element={<Home />} />
+      <Route path="/" element={<TrackingInput />} />
       <Route path="/colis/:colid" element={<PackageMovment />} />
       <Route path="/login" element={<Login />} />
       <Route path="/ajouter" element={<AddPackage />} />
