@@ -1,0 +1,19 @@
+.container{
+    width: 90%;
+    margin: auto;
+    /* display: flex;
+    flex-direction: column;
+    align-items: center; */
+}
+
+.container img {
+    display: block;
+    margin: auto;
+}
+
+@media (min-width: 768px){
+    .container{
+        width: 40% !important;
+
+    }
+}

@@ -5,9 +5,19 @@
     align-items: center;
     margin: auto;
 }
+.link{
+    text-decoration: none;
+    position: absolute;
+    top: 20px;
+    right: 5px;
+}
 
 @media (min-width: 768px) {
    .tracking{
        width: 30%;
-   } 
+   }
+   .link{
+       top: 25px;
+       right: 25px;
+   }
 }

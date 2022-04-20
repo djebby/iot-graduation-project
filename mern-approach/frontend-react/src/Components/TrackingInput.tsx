@@ -1,9 +1,9 @@
 import { useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import logo from "../images/logo_poste.png";
 
-import cssModules from "./TrackingInput.module.css";
+import cssClasses from "./TrackingInput.module.css";
 
 const TrackingInput = () => {
   const tagRef = useRef<HTMLInputElement>(null);
@@ -11,7 +11,6 @@ const TrackingInput = () => {
   const navigate = useNavigate();
 
     const tagSubmitionHandler = () => {
-      // A3FD5920
       if(tagRef.current!.value.length !== 8){
           console.log("Please enter a valid tag");
           setInputValidity(false);
@@ -25,13 +24,14 @@ const TrackingInput = () => {
     }
 
   return (
-    <div className={cssModules.tracking}>
+    <div className={cssClasses.tracking}>
+      <Link className={cssClasses.link} to="/login"><button className="btn btn-primary">admin</button></Link>
       <img src={logo} alt="poste logo" width="150" />
       <h3>Suivez vos envois Rapid-Poste</h3>
       <label htmlFor="tag" className="form-label">
         Numéro de l'envoi :
       </label>
-
+    
       <input
         id="tag"
         type="text"
