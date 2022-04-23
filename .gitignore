@@ -2,3 +2,7 @@
 # dependencies
 mern-approach/frontend-react/node_modules
 mern-approach/backend/node_modules
+
+# dist files
+mern-approach/backend/dist/*
+!mern-approach/backend/dist/.gitkeep
