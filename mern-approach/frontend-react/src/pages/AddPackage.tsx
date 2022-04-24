@@ -1,7 +1,6 @@
 import { useRef } from "react";
-import { Link } from "react-router-dom";
 
-import logo from "../images/logo_poste.png";
+import AdminTopBar from "../Components/AdminTopBar";
 import cssClasses from "./AddPackage.module.css";
 
 const AddPackage = () => {
@@ -38,16 +37,7 @@ const AddPackage = () => {
 
   return (
     <>
-      <nav className={cssClasses.nav}>
-        <img src={logo} width="75" alt="logo" />
-        <div>
-          <Link to="/effacer">
-            <button className="btn btn-danger mx-2">Effacer un colis</button>
-          </Link>
-          <button className="btn btn-warning">Déconnecter</button>
-        </div>
-      </nav>
-
+      <AdminTopBar />
       <div className={cssClasses["package-info"]}>
         <label htmlFor="rfidtag">RFID TAG *</label>
         <input
