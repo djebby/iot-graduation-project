@@ -2,7 +2,6 @@ import { Schema, model } from "mongoose";
 
 // 1. interface representing a package document in the collection.
 interface IPackage {
-    _id: number, // HEXADECIMAL NUMBER of rfidTag TO DECIMAL NUMBER
     rfidTag: string;
     poids: string;
     contreRembou: string;
@@ -37,7 +36,6 @@ interface IPackage {
 
 // 2. Create a Package Schema corresponding to the IPackage interface
 const packageSchema = new Schema<IPackage>({
-    _id: { type: Number, required: true, unique: true },
     rfidTag: { type: String, required: true, unique: true },
     poids: { type: String, required: true },
     contreRembou: { type: String,  default: undefined },
@@ -74,7 +72,7 @@ const packageSchema = new Schema<IPackage>({
         type_even: { type: String,  default: undefined }, 
         autres_info: { type: String,  default: undefined }
     }]
-}, { _id: false });
+});
 
 // 3. Create & Export of the Model
 export default model<IPackage>('package', packageSchema);

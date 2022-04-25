@@ -31,8 +31,50 @@ const AddPackage = () => {
   const refFaxPersExp = useRef<HTMLInputElement>(null);
   const refEmailPersExp = useRef<HTMLInputElement>(null);
 
-  const submitHandler = () => {
+  const onSubmitHandler = async () => {
     // checking and sending the http POST Request to the backend : /ajouter
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}ajouter`,{
+        method: 'POST',
+        body: JSON.stringify({
+          rfidTag: refRfidtag.current!.value,
+          poids: refPoids.current!.value,
+          contreRembou: refContreRembou.current!.value,
+          nomDest: refNomDest.current!.value,
+          rueDest: refRueDest.current!.value,
+          postDest: refPostDest.current!.value,
+          villeDest: refVilleDest.current!.value,
+          gouvDest: refGouvDest.current!.value,
+          paysDest: refPaysDest.current!.value,
+          servDest: refServDest.current!.value,
+          persContDest: refPersContDest.current!.value,
+          telDest: refTelDest.current!.value,
+          adrDest: refAdrDest.current!.value,
+          emailDest: refEmailDest.current!.value,
+
+          nomExp: refNomExp.current!.value,
+          depExp: refDepExp.current!.value,
+          rueExp: refRueExp.current!.value,
+          villeExp: refVilleExp.current!.value,
+          postExp: refPostExp.current!.value,
+          paysExp: refPaysExp.current!.value,
+          telExp: refTelExp.current!.value,
+          faxExp: refFaxExp.current!.value,
+          persExp: refPersExp.current!.value,
+          telPersExp: refTelPersExp.current!.value,
+          faxPersExp: refFaxPersExp.current!.value,
+          emailPersExp: refEmailPersExp.current!.value
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      const data = await response.json();
+      console.log(data);
+      
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -247,7 +289,7 @@ const AddPackage = () => {
             id="emailPersExp"
           />
           <button
-            onClick={submitHandler}
+            onClick={onSubmitHandler}
             className="btn btn-success btn-lg my-3"
           >
             ajouter
