@@ -1,6 +1,22 @@
 import { RequestHandler } from "express";
 import Package from "../models/package-model";
 
+//-----------------------------------------------GET => /api/:rfid
+export const getPackageMovementHistory: RequestHandler = async (req, res, next) => {
+  const rfid = req.params.rfid;
+  try {
+    const packageMovement = await Package.findOne({rfidTag: rfid}, 'movementHistory');
+    if(packageMovement === null){
+      return res.status(404).json({message: `sorry no package founded with this id ${rfid}`});
+    }
+    res.status(200).json(packageMovement!.movementHistory);
+  } catch (error: any) {
+    // throw an error to the error middleware
+    return next( new Error(error!.message));
+  }
+  
+}
+
 //-----------------------------------------------POST => /api/ajouter
 export const createPackage: RequestHandler = async (req, res, next) => {
   const {

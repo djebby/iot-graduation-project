@@ -1,4 +1,4 @@
-import React from 'react';
+import {useState, useEffect} from 'react';
 import { useParams } from 'react-router-dom';
 
 import TrackingInput from '../Components/TrackingInput';
@@ -16,26 +16,44 @@ const DUMMY_MOVMENT: any[] = [
 
 const PackageMovment = () => {
   const packageId = useParams().colid;
+  const [movement, setMovement] = useState<any[]>([]);
+  useEffect(()=>{
+    const fetchPackageMovementHistory = async () => {
+      try {
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}${packageId}`);
+        const data = await response.json();
+        setMovement(data);
+      } catch (error) {
+        
+      }
+      
+    }
+    fetchPackageMovementHistory();
+  }, [packageId]);
+
   return (
     <div>
       <TrackingInput />
       {
-        DUMMY_MOVMENT.length > 0 ?
+        movement.length > 0 ?
         <>
-        <h2>PackageMovment {packageId}</h2>
+        <div className="alert alert-info my-3" role="alert">
+          historique des mouvements de colis : {packageId}
+        </div>
+      
         <table className='table'>
             <thead className='table-dark'>
             <tr><th>date</th><th>Pays</th><th>Lieu</th><th>type d'evenment</th><th>Autres Informations</th></tr>
             </thead>
             <tbody>
             {
-              DUMMY_MOVMENT.map(mov => (
+              movement.map(mov => (
                 <tr key={mov.date}>
                   <td>{mov.date}</td>
                   <td>{mov.pays}</td>
                   <td>{mov.lieu}</td>
-                  <td>{mov.type}</td>
-                  <td>{mov.info}</td>
+                  <td>{mov.type_even}</td>
+                  <td>{mov.autres_info}</td>
                 </tr>
               ))
             }
@@ -43,7 +61,10 @@ const PackageMovment = () => {
         </table>
         </>
         :
-        <h3>Veuillez vérifier l'identifiant saisi {packageId} </h3>
+        <div className="alert alert-warning my-3" role="alert">
+          Veuillez vérifier l'identifiant saisi : {packageId}
+        </div>
+        
       }
     </div>
   )
