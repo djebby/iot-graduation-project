@@ -1,7 +1,7 @@
 import { RequestHandler } from "express";
 import Package from "../models/package-model";
 
-//-----------------------------------------------GET => /api/:rfid
+//----------------------------------------------------------------------------------------------GET => /api/:rfid
 export const getPackageMovementHistory: RequestHandler = async (req, res, next) => {
   const rfid = req.params.rfid;
   try {
@@ -15,9 +15,8 @@ export const getPackageMovementHistory: RequestHandler = async (req, res, next) 
     return next( new Error(error!.message));
   }
   
-}
-
-//-----------------------------------------------POST => /api/ajouter
+};
+//----------------------------------------------------------------------------------------------POST => /api/ajouter
 export const createPackage: RequestHandler = async (req, res, next) => {
   const {
     rfidTag,
@@ -50,7 +49,7 @@ export const createPackage: RequestHandler = async (req, res, next) => {
   } = req.body;
 
   try {
-    let newPackage = new Package({
+    const newPackage = new Package({
       rfidTag,
       poids,
       contreRembou,
@@ -87,9 +86,33 @@ export const createPackage: RequestHandler = async (req, res, next) => {
       autres_info: "autres inforamtion...",
     });
     await newPackage.save();
-  } catch (error) {
-    console.log(error);
-  }
+    res.status(201).json({message: `package ${rfidTag} addded successffully`});
 
-  res.status(200).json(req.body);
+  } catch (error: any) {
+    // throw an error to the error middleware
+    return next( new Error(error!.message));
+  }
+};
+
+//----------------------------------------------------------------------------------------------POST => /api/ajouter_movement/:rfid
+export const pushPackageMovement: RequestHandler = async (req, res, next) => {
+  const rfid = req.params.rfid;
+  try {
+    let colis = await Package.findOne({rfidTag: rfid});
+    if(colis === null){
+      return res.status(404).json({message: `sorry no package founded with this id ${rfid}`});
+    }
+    colis!.movementHistory.push({
+      date: new Date().toISOString().replace("T", " ").substring(0, 19),
+      pays: "Tunisia", // data from the decoded esp8266 token
+      lieu: "esp8266 location", // data from the decoded esp8266 token
+      type_even: "esp8266 event type", // data from the decoded esp8266 token
+      autres_info: "other information from esp8266", // data from the decoded esp8266 token
+    });
+    await colis?.save();
+    res.status(201).json({ message: `movement of package ${rfid} pushed successffully` });
+  } catch (error: any) {
+    // throw an error to the error middleware
+    return next( new Error(error!.message));
+  }
 };

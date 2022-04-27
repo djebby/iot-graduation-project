@@ -1,5 +1,5 @@
 import express from "express";
-import { createPackage, getPackageMovementHistory } from "../controllers/package-controllers";
+import { createPackage, getPackageMovementHistory, pushPackageMovement } from "../controllers/package-controllers";
 
 const router = express.Router();
 
@@ -12,7 +12,8 @@ router.post("/ajouter", createPackage);
 
 
 
-
+//-----------------------------------------------POST => /api/ajouter_movement/:rfid (this endpoint will be used by the esp8266)
+router.post("/ajouter_movement/:rfid", pushPackageMovement);
 
 
 
