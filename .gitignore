@@ -6,3 +6,6 @@ mern-approach/backend/node_modules
 # dist files
 mern-approach/backend/dist/*
 !mern-approach/backend/dist/.gitkeep
+
+# backend api tests
+mern-approach/requests.rest

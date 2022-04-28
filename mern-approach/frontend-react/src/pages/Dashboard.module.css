@@ -1,0 +1,16 @@
+.dashboard {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.token{
+    width: 40%;
+    background-color: #e3e3e3;
+    padding: 20px 30px;
+}
+
+.admin{
+    width: 40%;
+    background-color: #e3e3e3;
+    padding: 20px 30px;
+}
