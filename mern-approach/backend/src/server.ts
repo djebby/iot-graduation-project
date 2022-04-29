@@ -2,6 +2,7 @@ import express from "express";
 import { connect } from "mongoose";
 import { json } from "body-parser";
 import packageRoutes from "./routes/package-routes";
+import authRoutes from "./routes/auth-routes";
 
 const app = express();
 
@@ -15,6 +16,8 @@ app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE");
   next();
 });
+
+app.use("/api/auth", authRoutes);
 app.use("/api", packageRoutes);
 
 // error handling middelware
