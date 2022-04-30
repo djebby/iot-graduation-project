@@ -1,10 +1,13 @@
 import express from "express";
 import { connect } from "mongoose";
 import { json } from "body-parser";
+import 'dotenv/config'
+
 import packageRoutes from "./routes/package-routes";
 import authRoutes from "./routes/auth-routes";
 
 const app = express();
+
 
 app.use(json());
 app.use((req, res, next) => {
