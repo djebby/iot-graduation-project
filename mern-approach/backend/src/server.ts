@@ -23,7 +23,7 @@ app.use((req, res, next) => {
 app.use("/api/auth", authRoutes);
 app.use("/api", packageRoutes);
 
-// error handling middelware
+// error handling middleware
 app.use((error: Error, req: express.Request, res: express.Response, next: express.NextFunction)=>{
   res.status(500).json({message: error.message});
 });

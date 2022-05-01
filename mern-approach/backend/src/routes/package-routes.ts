@@ -1,5 +1,6 @@
 import express from "express";
-import { createPackage, getPackageMovementHistory, pushPackageMovement } from "../controllers/package-controllers";
+import { createPackage, getPackageMovementHistory, pushPackageMovement, deletePackage } from "../controllers/package-controllers";
+import { adminAuth, superAdminAuth } from "../middleware/check-auth";
 
 const router = express.Router();
 
@@ -8,12 +9,15 @@ const router = express.Router();
 router.get("/:rfid", getPackageMovementHistory);
 
 //-----------------------------------------------POST => /api/ajouter
-router.post("/ajouter", createPackage);
+router.post("/ajouter", adminAuth, createPackage);
 
-
+//-----------------------------------------------DELETE => /api/package/:rfid
+router.delete("/package/:rfid", adminAuth, deletePackage);
 
 //-----------------------------------------------POST => /api/ajouter_movement/:rfid (this endpoint will be used by the esp8266)
 router.post("/ajouter_movement/:rfid", pushPackageMovement);
+
+
 
 
 

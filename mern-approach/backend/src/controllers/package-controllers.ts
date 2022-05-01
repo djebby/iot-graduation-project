@@ -116,3 +116,17 @@ export const pushPackageMovement: RequestHandler = async (req, res, next) => {
     return next( new Error(error!.message));
   }
 };
+
+export const deletePackage: RequestHandler = async (req, res, next) => {
+  const rfid = req.params.rfid;
+  try {
+    if(!(await Package.findOne({rfidTag: rfid}))) 
+      return res.status(404).json({message: `sorry no package founded with this id ${rfid}`});
+    
+    const deletionResult = await Package.deleteOne({rfidTag: rfid});
+
+    res.status(200).json({message: "package deleted successfully ", deletionResult});
+  } catch (error: any) {
+    return next(new Error(error!.message));
+  }
+}
