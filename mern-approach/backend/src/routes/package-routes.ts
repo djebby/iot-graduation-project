@@ -1,6 +1,6 @@
 import express from "express";
 import { createPackage, getPackageMovementHistory, pushPackageMovement, deletePackage } from "../controllers/package-controllers";
-import { adminAuth, superAdminAuth } from "../middleware/check-auth";
+import { adminAuth, superAdminAuth, rfidReaderAuth } from "../middleware/check-auth";
 
 const router = express.Router();
 

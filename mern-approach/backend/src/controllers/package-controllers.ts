@@ -1,7 +1,7 @@
 import { RequestHandler } from "express";
 import Package from "../models/package-model";
 
-//----------------------------------------------------------------------------------------------GET => /api/:rfid
+//----------------------------------------------------------------------------------------------GET => /api/:rfid (no authorization required)
 export const getPackageMovementHistory: RequestHandler = async (req, res, next) => {
   const rfid = req.params.rfid;
   try {
@@ -16,7 +16,7 @@ export const getPackageMovementHistory: RequestHandler = async (req, res, next) 
   }
   
 };
-//----------------------------------------------------------------------------------------------POST => /api/ajouter
+//----------------------------------------------------------------------------------------------POST => /api/ajouter (require normal admin authorization)
 export const createPackage: RequestHandler = async (req, res, next) => {
   const {
     rfidTag,
@@ -94,7 +94,7 @@ export const createPackage: RequestHandler = async (req, res, next) => {
   }
 };
 
-//----------------------------------------------------------------------------------------------POST => /api/ajouter_movement/:rfid
+//----------------------------------------------------------------------------------------------POST => /api/ajouter_movement/:rfid (require rfid reader authorization)
 export const pushPackageMovement: RequestHandler = async (req, res, next) => {
   const rfid = req.params.rfid;
   try {
@@ -117,6 +117,7 @@ export const pushPackageMovement: RequestHandler = async (req, res, next) => {
   }
 };
 
+//----------------------------------------------------------------------------------------------DELETE => /api/package/:rfid (require normal admin authorization)
 export const deletePackage: RequestHandler = async (req, res, next) => {
   const rfid = req.params.rfid;
   try {
@@ -129,4 +130,4 @@ export const deletePackage: RequestHandler = async (req, res, next) => {
   } catch (error: any) {
     return next(new Error(error!.message));
   }
-}
+};
