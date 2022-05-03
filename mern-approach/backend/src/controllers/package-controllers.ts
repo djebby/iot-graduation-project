@@ -16,8 +16,8 @@ export const getPackageMovementHistory: RequestHandler = async (req, res, next) 
   }
   
 };
-//----------------------------------------------------------------------------------------------POST => /api/ajouter (require normal admin authorization)
-export const createPackage: RequestHandler = async (req, res, next) => {
+//----------------------------------------------------------------------------------------------POST => /api/ajouter (after normal admin authorization)
+export const createPackage: RequestHandler = async (req: any, res, next) => {
   const {
     rfidTag,
     poids,
@@ -80,8 +80,8 @@ export const createPackage: RequestHandler = async (req, res, next) => {
     });
     newPackage.movementHistory.push({
       date: new Date().toISOString().replace("T", " ").substring(0, 19),
-      pays: "req.adminData.pays", // data from the decoded admin token
-      lieu: "req.adminData.lieu", // data from the decoded admin token
+      pays: "Tunisia",
+      lieu: req.adminData.post_office, // data from the decoded admin token
       type_even: "Recevoir les envois du client", // intial movement
       autres_info: "autres inforamtion...",
     });
@@ -94,7 +94,7 @@ export const createPackage: RequestHandler = async (req, res, next) => {
   }
 };
 
-//----------------------------------------------------------------------------------------------POST => /api/ajouter_movement/:rfid (require rfid reader authorization)
+//----------------------------------------------------------------------------------------------POST => /api/ajouter_movement/:rfid (after rfid reader authorization)
 export const pushPackageMovement: RequestHandler = async (req, res, next) => {
   const rfid = req.params.rfid;
   try {
@@ -117,7 +117,7 @@ export const pushPackageMovement: RequestHandler = async (req, res, next) => {
   }
 };
 
-//----------------------------------------------------------------------------------------------DELETE => /api/package/:rfid (require normal admin authorization)
+//----------------------------------------------------------------------------------------------DELETE => /api/package/:rfid (after normal admin authorization)
 export const deletePackage: RequestHandler = async (req, res, next) => {
   const rfid = req.params.rfid;
   try {

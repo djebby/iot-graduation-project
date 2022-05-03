@@ -29,11 +29,17 @@ export const adminLogin: RequestHandler = async (req, res, next) => {
     if (!isPasswordCorrect)
       return res.status(401).json({ message: "incorrect password" });
     // generate a new token for the admin
-    let role =
-      existingAdmin.name === "super.admin.00" ? "super-admin" : "admin";
+    let role = "admin";
+    let secretKey : string = process.env.JWT_NORMAL_ADMIN_SECRET_KEY as string;
+
+    if(existingAdmin.name === "super.admin.00") {
+      secretKey = process.env.JWT_SUPER_ADMIN_SECRET_KEY as string;
+      role = "super-admin";
+    }
+    
     const token = jwt.sign(
-      { name: existingAdmin.name, role },
-      process.env.JWT_SECRET_KEY!.toString(),
+      { name: existingAdmin.name, role, post_office: existingAdmin.post_office },
+      secretKey,
       { expiresIn: "10h" }
     );
     res
@@ -51,17 +57,18 @@ export const adminLogin: RequestHandler = async (req, res, next) => {
   }
 };
 
-//----------------------------------------------------------------------------------------------POST => /api/auth/signup (require super admin authorization)
+//----------------------------------------------------------------------------------------------POST => /api/auth/signup (after super admin authorization)
 export const createAdmin: RequestHandler = async (req, res, next) => {
-  const { name, password } = req.body;
+  const { name, post_office, password } = req.body;
   if (password.length < 5)
     return next(new Error("password should have at least 5 characters!"));
   try {
     const hashedPassword = await bcrypt.hash(password, 12);
-    const newAdmin = await new Admin({ name, password: hashedPassword }).save();
+    const newAdmin = await new Admin({ name, post_office, password: hashedPassword }).save();
     res.status(201).json({
       message: "admin added successfully",
       adminName: newAdmin.name,
+      post_office: newAdmin.post_office,
       adminPassword: password,
     });
   } catch (error: any) {
@@ -69,7 +76,7 @@ export const createAdmin: RequestHandler = async (req, res, next) => {
   }
 };
 
-//----------------------------------------------------------------------------------------------DELETE => /api/auth/:adminName (require super admin authorization)
+//----------------------------------------------------------------------------------------------DELETE => /api/auth/:adminName (after super admin authorization)
 export const deleteAdmin: RequestHandler = async (req, res, next) => {
   const adminName = req.params.adminName;
   try {

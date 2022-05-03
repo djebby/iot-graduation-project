@@ -8,6 +8,7 @@ const Dashboard = () => {
     useState<string>("password");
 
   const refNewAdminName = useRef<HTMLInputElement>(null);
+  const refNewAdminOffice = useRef<HTMLInputElement>(null);
   const refRegisteredAdminName = useRef<HTMLInputElement>(null);
   const refAdminPassword = useRef<HTMLInputElement>(null);
 
@@ -29,6 +30,7 @@ const Dashboard = () => {
     // will send post request to the backend
     console.log("admin : ", refNewAdminName.current!.value);
     console.log("password : ", refAdminPassword.current!.value);
+    console.log("admin office : ", refNewAdminOffice.current!.value);
   };
 
   const onDeleteRegisteredAdminHandler = () => {
@@ -102,6 +104,7 @@ const Dashboard = () => {
             générer
           </button>
         </div>
+
         <label htmlFor="admin-password">
           Mot de passe de l'administrateur:
         </label>
@@ -121,10 +124,20 @@ const Dashboard = () => {
             générer
           </button>
         </div>
+
+        <label htmlFor="post-office">Lieu</label>
+        <input
+          type="text"
+          id="post-office"
+          ref={refNewAdminOffice}
+          placeholder="Nom et numéro du bureau de poste"
+          className="form-control"
+        />
+
         <button
           onClick={onAddAdminHandler}
           type="button"
-          className="btn btn-success"
+          className="btn btn-success my-3"
         >
           Ajouter un nouveau admin
         </button>

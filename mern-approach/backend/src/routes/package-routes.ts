@@ -1,21 +1,21 @@
 import express from "express";
 import { createPackage, getPackageMovementHistory, pushPackageMovement, deletePackage } from "../controllers/package-controllers";
-import { adminAuth, superAdminAuth, rfidReaderAuth } from "../middleware/check-auth";
+import checkAuth from "../middleware/check-auth";
 
 const router = express.Router();
 
 
-//-----------------------------------------------GET => /api/:rfid
+//-----------------------------------------------GET => /api/:rfid (no authorization required)
 router.get("/:rfid", getPackageMovementHistory);
 
-//-----------------------------------------------POST => /api/ajouter
-router.post("/ajouter", adminAuth, createPackage);
+//-----------------------------------------------POST => /api/ajouter (require normal admin authorization)
+router.post("/ajouter", checkAuth(process.env.JWT_NORMAL_ADMIN_SECRET_KEY! as string), createPackage);
 
-//-----------------------------------------------DELETE => /api/package/:rfid
-router.delete("/package/:rfid", adminAuth, deletePackage);
+//-----------------------------------------------DELETE => /api/package/:rfid (require normal admin authorization)
+router.delete("/package/:rfid", checkAuth(process.env.JWT_NORMAL_ADMIN_SECRET_KEY! as string), deletePackage);
 
-//-----------------------------------------------POST => /api/ajouter_movement/:rfid (this endpoint will be used by the esp8266)
-router.post("/ajouter_movement/:rfid", pushPackageMovement);
+//-----------------------------------------------POST => /api/ajouter_movement/:rfid (require rfid reader authorization)
+router.post("/ajouter_movement/:rfid", checkAuth(<string> process.env.JWT_RFID_READER_SECRET_KEY), pushPackageMovement);
 
 
 
