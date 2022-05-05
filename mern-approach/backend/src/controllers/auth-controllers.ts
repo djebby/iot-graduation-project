@@ -76,6 +76,18 @@ export const createAdmin: RequestHandler = async (req, res, next) => {
   }
 };
 
+//----------------------------------------------------------------------------------------------POST => /api/auth/create-rfid-token
+export const createRfidToken: RequestHandler = async (req, res, next) => {
+  const tokenPayload = req.body;
+  try {
+    const token = jwt.sign(tokenPayload, <string> process.env.JWT_RFID_READER_SECRET_KEY, {expiresIn: "90d"});
+    res.status(200).json({token});
+  } catch (error: any) {
+    return next(new Error(error.message));
+  }
+};
+
+
 //----------------------------------------------------------------------------------------------DELETE => /api/auth/:adminName (after super admin authorization)
 export const deleteAdmin: RequestHandler = async (req, res, next) => {
   const adminName = req.params.adminName;

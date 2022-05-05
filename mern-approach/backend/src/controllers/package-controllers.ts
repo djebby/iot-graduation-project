@@ -81,9 +81,9 @@ export const createPackage: RequestHandler = async (req: any, res, next) => {
     newPackage.movementHistory.push({
       date: new Date().toISOString().replace("T", " ").substring(0, 19),
       pays: "Tunisia",
-      lieu: req.adminData.post_office, // data from the decoded admin token
+      lieu: req.jwtPayload.post_office, // data from the decoded admin token
       type_even: "Recevoir les envois du client", // intial movement
-      autres_info: "autres inforamtion...",
+      autres_info: "autres information...",
     });
     await newPackage.save();
     res.status(201).json({message: `package ${rfidTag} addded successffully`});
@@ -95,7 +95,7 @@ export const createPackage: RequestHandler = async (req: any, res, next) => {
 };
 
 //----------------------------------------------------------------------------------------------POST => /api/ajouter_movement/:rfid (after rfid reader authorization)
-export const pushPackageMovement: RequestHandler = async (req, res, next) => {
+export const pushPackageMovement: RequestHandler = async (req: any, res, next) => {
   const rfid = req.params.rfid;
   try {
     let colis = await Package.findOne({rfidTag: rfid});
@@ -104,10 +104,10 @@ export const pushPackageMovement: RequestHandler = async (req, res, next) => {
     }
     colis!.movementHistory.push({
       date: new Date().toISOString().replace("T", " ").substring(0, 19),
-      pays: "Tunisia", // data from the decoded esp8266 token
-      lieu: "esp8266 location", // data from the decoded esp8266 token
-      type_even: "esp8266 event type", // data from the decoded esp8266 token
-      autres_info: "other information from esp8266", // data from the decoded esp8266 token
+      pays: req.jwtPayload.pays, // data from the decoded esp8266 token
+      lieu: req.jwtPayload.lieu, // data from the decoded esp8266 token
+      type_even: req.jwtPayload.type_even, // data from the decoded esp8266 token
+      autres_info: req.jwtPayload.autres_info, // data from the decoded esp8266 token
     });
     await colis?.save();
     res.status(201).json({ message: `movement of package ${rfid} pushed successffully` });

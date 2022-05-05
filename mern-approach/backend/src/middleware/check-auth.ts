@@ -13,7 +13,7 @@ export default (secretKey: string) =>
         .json({ message: "please send request with a token", token });
     try {
       const decoded = jwt.verify(token, secretKey);
-      req.adminData = decoded;
+      req.jwtPayload = decoded;
       next();
     } catch (error) {
       return next(new Error("your are not authorized !"));
