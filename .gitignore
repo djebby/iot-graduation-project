@@ -12,3 +12,6 @@ mern-approach/backend/.env
 
 # backend api tests
 mern-approach/requests.rest
+
+# rfid reader's token
+mern-approach/frontend-rfid-reader/json-web-token.local.h
