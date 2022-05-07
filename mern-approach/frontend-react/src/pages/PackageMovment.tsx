@@ -4,16 +4,6 @@ import { useParams } from 'react-router-dom';
 import TrackingInput from '../Components/TrackingInput';
 
 
-//this data should fetched from the backend !!!! GET /:packageId
-const DUMMY_MOVMENT: any[] = [
-  {date: "2020-06-19 15:43:40", pays: "Tunisia", lieu: "Agence Rapid-Poste Ariana", type: "Recevoir les envois du client (Otb)", info: ""},
-  {date: "2020-06-19 16:09:57", pays: "Tunisia", lieu: "Agence Rapid-Poste Ariana", type: "Envoyer vers le prochain point de traitement (Otb)", info: ""},
-  {date: "2020-06-19 17:31:13", pays: "Tunisia", lieu: "TUNIS CARTHAGE RAPID POST EMS", type: "Reception des envois au Centre de traitement (Otb et National)", info: ""},
-  {date: "2020-06-19 20:30:00", pays: "Tunisia", lieu: "TUNIS CARTHAGE RAPID POST EMS", type: "Envoyer vers le prochain point de traitement (Inb)", info: ""},
-  {date: "2020-06-20 07:55:12", pays: "Tunisia", lieu: "Centre de distribution Beja", type: "Envoyer vers le prochain point de traitement (Inb)", info: ""},
-  {date: "2020-06-20 08:36:00", pays: "Tunisia", lieu: "THIBAR", type: "Recevoir envoi au bureau de livraison (Inb)", info: ""},
-];
-
 const PackageMovment = () => {
   const packageId = useParams().colid;
   const [movement, setMovement] = useState<any[]>([]);

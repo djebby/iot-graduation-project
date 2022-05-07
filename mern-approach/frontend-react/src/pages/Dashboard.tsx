@@ -1,11 +1,21 @@
 import { useRef, useState } from "react";
 
+import ResponseBox from "../Components/ResponseBox";
 import getPassword from "../util/generateRandomPassword";
 import cssClasses from "./Dashboard.module.css";
 
 const Dashboard = () => {
   const [passwordVisibility, setPasswordVisibility] =
     useState<string>("password");
+  const [responseBoxVisibility, setResponseBoxVisibility] =
+    useState<boolean>(false);
+  const [onAddAdminResponse, setOnAddAdminResponse] = useState<
+    { label: string; value: string }[]
+  >([]);
+  const [
+    onAddAdminResponseTypeAndMessage,
+    setOnAddAdminResponseTypeAndMessage,
+  ] = useState<{ type: string; message: string }>({ type: "", message: "" });
 
   const refNewAdminName = useRef<HTMLInputElement>(null);
   const refNewAdminOffice = useRef<HTMLInputElement>(null);
@@ -26,15 +36,87 @@ const Dashboard = () => {
     setPasswordVisibility("text");
   };
 
-  const onAddAdminHandler = () => {
+  // let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoic3VwZXIuYWRtaW4uMDAiLCJyb2xlIjoic3VwZXItYWRtaW4iLCJwb3N0X29mZmljZSI6IkNFTlRSQUwgQURNSU5JU1RSQVRJT04iLCJpYXQiOjE2NTE5MTU4NjMsImV4cCI6MTY1MTk1MTg2M30.0h68Ngkc8uWWDHtgu1gDjZJtKQyVdWLujCXMXj3WYKc";
+
+  const onAddAdminHandler = async () => {
     // will send post request to the backend
-    console.log("admin : ", refNewAdminName.current!.value);
-    console.log("password : ", refAdminPassword.current!.value);
-    console.log("admin office : ", refNewAdminOffice.current!.value);
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}auth/signup`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer token...",
+            // "Authorization": "Bearer the.token.that.will.be.stored.with.redux..."
+          },
+          body: JSON.stringify({
+            name: refNewAdminName.current!.value,
+            post_office: refNewAdminOffice.current!.value,
+            password: refAdminPassword.current!.value,
+          }),
+        }
+      );
+      const data = await response.json();
+      if (response.ok) {
+        setOnAddAdminResponse([
+          {
+            label: "admin name :",
+            value: data.adminName,
+          },
+          {
+            label: "admin password :",
+            value: data.adminPassword,
+          },
+          {
+            label: "admin office :",
+            value: data.post_office,
+          },
+        ]);
+        setOnAddAdminResponseTypeAndMessage({
+          type: "success",
+          message: data.message,
+        });
+      } else {
+        setOnAddAdminResponseTypeAndMessage({
+          type: "error",
+          message: data.message,
+        });
+      }
+      
+
+      console.log(response.ok, data);
+    } catch (error: any) {
+      setOnAddAdminResponseTypeAndMessage({
+        type: "error",
+        message: error.message,
+      });
+      console.log(error);
+    } finally {
+      setResponseBoxVisibility(true);
+    }
   };
 
-  const onDeleteRegisteredAdminHandler = () => {
+  const onDeleteRegisteredAdminHandler = async () => {
     // will send delete request to the backend
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}auth/${
+          refRegisteredAdminName.current!.value
+        }`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer token...",
+          },
+        }
+      );
+      const data = await response.json();
+      console.log(data);
+    } catch (error) {
+      console.log(error);
+    }
     console.log("delete => " + refRegisteredAdminName.current!.value);
   };
 
@@ -157,6 +239,14 @@ const Dashboard = () => {
         >
           Effacer un admin
         </button>
+        <hr />
+        {responseBoxVisibility && (
+          <ResponseBox
+            type={onAddAdminResponseTypeAndMessage.type}
+            message={onAddAdminResponseTypeAndMessage.message}
+            data = {onAddAdminResponse}
+          />
+        )}
       </div>
     </div>
   );
