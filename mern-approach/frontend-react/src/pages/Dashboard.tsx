@@ -1,21 +1,17 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState,  } from "react";
 
 import ResponseBox from "../Components/ResponseBox";
 import getPassword from "../util/generateRandomPassword";
 import cssClasses from "./Dashboard.module.css";
 
+
 const Dashboard = () => {
-  const [passwordVisibility, setPasswordVisibility] =
-    useState<string>("password");
-  const [responseBoxVisibility, setResponseBoxVisibility] =
-    useState<boolean>(false);
-  const [onAddAdminResponse, setOnAddAdminResponse] = useState<
-    { label: string; value: string }[]
-  >([]);
-  const [
-    onAddAdminResponseTypeAndMessage,
-    setOnAddAdminResponseTypeAndMessage,
-  ] = useState<{ type: string; message: string }>({ type: "", message: "" });
+  const [passwordVisibility, setPasswordVisibility] = useState<string>("password");
+  const [responseBoxVisibility, setResponseBoxVisibility] = useState<boolean>(false);
+  const [rfidReaderJWT, setRfidReaderJWT] = useState<string>("");
+  const [onAddAdminResponse, setOnAddAdminResponse] = useState<{ label: string; value: string }[]>([]);
+  const [ responseTypeAndMessage, setResponseTypeAndMessage ] = useState<{ type: string; message: string }>({ type: "", message: "" });
+
 
   const refNewAdminName = useRef<HTMLInputElement>(null);
   const refNewAdminOffice = useRef<HTMLInputElement>(null);
@@ -36,7 +32,7 @@ const Dashboard = () => {
     setPasswordVisibility("text");
   };
 
-  // let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoic3VwZXIuYWRtaW4uMDAiLCJyb2xlIjoic3VwZXItYWRtaW4iLCJwb3N0X29mZmljZSI6IkNFTlRSQUwgQURNSU5JU1RSQVRJT04iLCJpYXQiOjE2NTE5MTU4NjMsImV4cCI6MTY1MTk1MTg2M30.0h68Ngkc8uWWDHtgu1gDjZJtKQyVdWLujCXMXj3WYKc";
+  let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoic3VwZXIuYWRtaW4uMDAiLCJyb2xlIjoic3VwZXItYWRtaW4iLCJwb3N0X29mZmljZSI6IkNFTlRSQUwgQURNSU5JU1RSQVRJT04iLCJpYXQiOjE2NTIwMDI3MDcsImV4cCI6MTY1MjAzODcwN30.-B-HUXueIZz4nBHxULGza7pzhsD4sUeUIJXaWRpOL4A";
 
   const onAddAdminHandler = async () => {
     // will send post request to the backend
@@ -47,7 +43,7 @@ const Dashboard = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: "Bearer token...",
+            Authorization: "Bearer " + token,
             // "Authorization": "Bearer the.token.that.will.be.stored.with.redux..."
           },
           body: JSON.stringify({
@@ -59,6 +55,7 @@ const Dashboard = () => {
       );
       const data = await response.json();
       if (response.ok) {
+
         setOnAddAdminResponse([
           {
             label: "admin name :",
@@ -73,12 +70,12 @@ const Dashboard = () => {
             value: data.post_office,
           },
         ]);
-        setOnAddAdminResponseTypeAndMessage({
+        setResponseTypeAndMessage({
           type: "success",
           message: data.message,
         });
       } else {
-        setOnAddAdminResponseTypeAndMessage({
+        setResponseTypeAndMessage({
           type: "error",
           message: data.message,
         });
@@ -87,7 +84,7 @@ const Dashboard = () => {
 
       console.log(response.ok, data);
     } catch (error: any) {
-      setOnAddAdminResponseTypeAndMessage({
+      setResponseTypeAndMessage({
         type: "error",
         message: error.message,
       });
@@ -98,7 +95,7 @@ const Dashboard = () => {
   };
 
   const onDeleteRegisteredAdminHandler = async () => {
-    // will send delete request to the backend
+    setOnAddAdminResponse([]);
     try {
       const response = await fetch(
         `${process.env.REACT_APP_BACKEND_URL}auth/${
@@ -108,21 +105,57 @@ const Dashboard = () => {
           method: "DELETE",
           headers: {
             "Content-Type": "application/json",
-            Authorization: "Bearer token...",
+            Authorization: "Bearer " + token,
           },
         }
       );
       const data = await response.json();
-      console.log(data);
-    } catch (error) {
-      console.log(error);
+
+      if(response.ok){
+        setResponseTypeAndMessage({type: "success", message: data.message});
+      } else {
+        setResponseTypeAndMessage({type: "error", message: data.message});
+      }
+
+    } catch (error: any) {
+      setResponseTypeAndMessage({type: "error", message: error.message});
+    }
+    finally {
+      setResponseBoxVisibility(true);
     }
     console.log("delete => " + refRegisteredAdminName.current!.value);
   };
 
-  const onCreateTokenHandler = () => {
+  const onCreateTokenHandler = async () => {
     // will send post request to the backend
     console.log("generate a new jwt for esp8266...");
+    console.log();
+    console.log();
+    console.log();
+    console.log();
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}auth/create-rfid-token`, {
+        method: "POST",
+        headers: {
+          "Content-Type" : "application/json",
+          Authorization  : "Bearer " + token,
+        },
+        body: JSON.stringify({
+          pays : refCountry.current!.value,
+          lieu : refPlace.current!.value,
+          type_even : refEventType.current!.value,
+          autres_info : refOtherInfo.current!.value
+        })
+      });
+      const data = await response.json();
+      if(response.ok){
+        setRfidReaderJWT(data.token);
+      } else {
+        setRfidReaderJWT("there is an error occured!");
+      }
+    } catch (error) {
+      setRfidReaderJWT("there is an error occured!");
+    }
   };
 
   return (
@@ -167,6 +200,11 @@ const Dashboard = () => {
         >
           générer un jeton
         </button>
+        <hr />
+        <div className="form-floating">
+          <textarea className="form-control" placeholder="Leave a comment here" id="floatingTextarea" value={rfidReaderJWT} readOnly style={{height: "180px"}} ></textarea>
+          <label htmlFor="floatingTextarea">The json web token : </label>
+        </div>
       </div>
       <div className={cssClasses.admin}>
         <label htmlFor="admin-name">Nom de l'administrateur: </label>
@@ -242,8 +280,8 @@ const Dashboard = () => {
         <hr />
         {responseBoxVisibility && (
           <ResponseBox
-            type={onAddAdminResponseTypeAndMessage.type}
-            message={onAddAdminResponseTypeAndMessage.message}
+            type={responseTypeAndMessage.type}
+            message={responseTypeAndMessage.message}
             data = {onAddAdminResponse}
           />
         )}
