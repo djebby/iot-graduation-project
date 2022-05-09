@@ -16,6 +16,6 @@ export default (secretKey: string) =>
       req.jwtPayload = decoded;
       next();
     } catch (error) {
-      return next(new Error("your are not authorized !"));
+      res.status(403).json({message: "your are not authorized !"});
     }
   };

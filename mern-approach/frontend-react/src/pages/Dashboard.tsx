@@ -1,17 +1,23 @@
-import { useEffect, useRef, useState,  } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import ResponseBox from "../Components/ResponseBox";
 import getPassword from "../util/generateRandomPassword";
 import cssClasses from "./Dashboard.module.css";
 
-
 const Dashboard = () => {
-  const [passwordVisibility, setPasswordVisibility] = useState<string>("password");
-  const [responseBoxVisibility, setResponseBoxVisibility] = useState<boolean>(false);
+  const [passwordVisibility, setPasswordVisibility] =
+    useState<string>("password");
+  const [responseBoxVisibility, setResponseBoxVisibility] =
+    useState<boolean>(false);
   const [rfidReaderJWT, setRfidReaderJWT] = useState<string>("");
-  const [onAddAdminResponse, setOnAddAdminResponse] = useState<{ label: string; value: string }[]>([]);
-  const [ responseTypeAndMessage, setResponseTypeAndMessage ] = useState<{ type: string; message: string }>({ type: "", message: "" });
-
+  const [onAddAdminResponse, setOnAddAdminResponse] = useState<
+    { label: string; value: string }[]
+  >([]);
+  const [responseTypeAndMessage, setResponseTypeAndMessage] = useState<{
+    type: string;
+    message: string;
+  }>({ type: "", message: "" });
+  const [jwtError, setJwtError] = useState<{state: boolean; message: string}>({state: false, message: ""});
 
   const refNewAdminName = useRef<HTMLInputElement>(null);
   const refNewAdminOffice = useRef<HTMLInputElement>(null);
@@ -21,6 +27,7 @@ const Dashboard = () => {
   const refCountry = useRef<HTMLInputElement>(null);
   const refPlace = useRef<HTMLInputElement>(null);
   const refEventType = useRef<HTMLInputElement>(null);
+  const refExpTime = useRef<HTMLInputElement>(null);
   const refOtherInfo = useRef<HTMLInputElement>(null);
 
   const generateUniqueNameHandler = () => {
@@ -32,7 +39,8 @@ const Dashboard = () => {
     setPasswordVisibility("text");
   };
 
-  let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoic3VwZXIuYWRtaW4uMDAiLCJyb2xlIjoic3VwZXItYWRtaW4iLCJwb3N0X29mZmljZSI6IkNFTlRSQUwgQURNSU5JU1RSQVRJT04iLCJpYXQiOjE2NTIwMDI3MDcsImV4cCI6MTY1MjAzODcwN30.-B-HUXueIZz4nBHxULGza7pzhsD4sUeUIJXaWRpOL4A";
+  let token =
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoic3VwZXIuYWRtaW4uMDAiLCJyb2xlIjoic3VwZXItYWRtaW4iLCJwb3N0X29mZmljZSI6IkNFTlRSQUwgQURNSU5JU1RSQVRJT04iLCJpYXQiOjE2NTIxMTU1NzUsImV4cCI6MTY1MjE1MTU3NX0.eZi2u66AmjMtOqJS2fKmFTz7aKNoab_pqN7l4MT5Uws";
 
   const onAddAdminHandler = async () => {
     // will send post request to the backend
@@ -55,7 +63,6 @@ const Dashboard = () => {
       );
       const data = await response.json();
       if (response.ok) {
-
         setOnAddAdminResponse([
           {
             label: "admin name :",
@@ -80,7 +87,6 @@ const Dashboard = () => {
           message: data.message,
         });
       }
-      
 
       console.log(response.ok, data);
     } catch (error: any) {
@@ -111,56 +117,55 @@ const Dashboard = () => {
       );
       const data = await response.json();
 
-      if(response.ok){
-        setResponseTypeAndMessage({type: "success", message: data.message});
+      if (response.ok) {
+        setResponseTypeAndMessage({ type: "success", message: data.message });
       } else {
-        setResponseTypeAndMessage({type: "error", message: data.message});
+        setResponseTypeAndMessage({ type: "error", message: data.message });
       }
-
     } catch (error: any) {
-      setResponseTypeAndMessage({type: "error", message: error.message});
-    }
-    finally {
+      setResponseTypeAndMessage({ type: "error", message: error.message });
+    } finally {
       setResponseBoxVisibility(true);
     }
     console.log("delete => " + refRegisteredAdminName.current!.value);
   };
 
   const onCreateTokenHandler = async () => {
-    // will send post request to the backend
-    console.log("generate a new jwt for esp8266...");
-    console.log();
-    console.log();
-    console.log();
-    console.log();
     try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}auth/create-rfid-token`, {
-        method: "POST",
-        headers: {
-          "Content-Type" : "application/json",
-          Authorization  : "Bearer " + token,
-        },
-        body: JSON.stringify({
-          pays : refCountry.current!.value,
-          lieu : refPlace.current!.value,
-          type_even : refEventType.current!.value,
-          autres_info : refOtherInfo.current!.value
-        })
-      });
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}auth/create-rfid-token`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token,
+          },
+          body: JSON.stringify({
+            pays: refCountry.current!.value,
+            lieu: refPlace.current!.value,
+            type_even: refEventType.current!.value,
+            expiration: refExpTime.current!.value,
+            autres_info: refOtherInfo.current!.value,
+          }),
+        }
+      );
       const data = await response.json();
-      if(response.ok){
+      if (response.ok) {
+      setJwtError({state: false, message: ""});
         setRfidReaderJWT(data.token);
       } else {
-        setRfidReaderJWT("there is an error occured!");
+        setJwtError({state: true, message: data.message});
       }
-    } catch (error) {
-      setRfidReaderJWT("there is an error occured!");
+    } catch (error: any) {
+      setJwtError({state: true, message: error.message});
     }
   };
 
   return (
     <div className={cssClasses.dashboard}>
       <div className={cssClasses.token}>
+        <h5>générer un jeton pour un nouveau lecteur rfid </h5>
+        <hr/>
         <label htmlFor="pays">pays: </label>
         <input
           ref={refCountry}
@@ -177,13 +182,23 @@ const Dashboard = () => {
           className="form-control my-1"
           placeholder="lieu"
         />
-        <label htmlFor="registered-admin-name">type d'événement:</label>
+        <label htmlFor="event-type">type d'événement:</label>
         <input
           ref={refEventType}
-          type="event-type"
+          type="text"
           id="event-type"
           className="form-control my-1"
           placeholder="type d'événement"
+        />
+        <label htmlFor="expiration">temps d'expiration de jeton {"(entre 1 et 90 jour)"}</label>
+        <input
+          ref={refExpTime}
+          type="number"
+          min={1}
+          max={90}
+          id="expiration"
+          className="form-control my-1"
+          placeholder="temps d'expiration"
         />
         <label htmlFor="other-info">autre information</label>
         <input
@@ -201,12 +216,27 @@ const Dashboard = () => {
           générer un jeton
         </button>
         <hr />
-        <div className="form-floating">
-          <textarea className="form-control" placeholder="Leave a comment here" id="floatingTextarea" value={rfidReaderJWT} readOnly style={{height: "180px"}} ></textarea>
-          <label htmlFor="floatingTextarea">The json web token : </label>
-        </div>
+        {jwtError.state ? (
+          <div className = "alert alert-danger" role="alert">
+            {jwtError.message}
+          </div>
+        ) : (
+          <div className="form-floating">
+            <textarea
+              className="form-control"
+              placeholder="Leave a comment here"
+              id="floatingTextarea"
+              value={rfidReaderJWT}
+              readOnly
+              style={{ height: "180px" }}
+            ></textarea>
+            <label htmlFor="floatingTextarea">The json web token : </label>
+          </div>
+        )}
       </div>
       <div className={cssClasses.admin}>
+        <h5>Crée un nouveau admin</h5>
+        <hr />
         <label htmlFor="admin-name">Nom de l'administrateur: </label>
         <div className="input-group mb-3">
           <input
@@ -282,7 +312,7 @@ const Dashboard = () => {
           <ResponseBox
             type={responseTypeAndMessage.type}
             message={responseTypeAndMessage.message}
-            data = {onAddAdminResponse}
+            data={onAddAdminResponse}
           />
         )}
       </div>

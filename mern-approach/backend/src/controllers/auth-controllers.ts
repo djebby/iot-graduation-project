@@ -78,9 +78,13 @@ export const createAdmin: RequestHandler = async (req, res, next) => {
 
 //----------------------------------------------------------------------------------------------POST => /api/auth/create-rfid-token
 export const createRfidToken: RequestHandler = async (req, res, next) => {
-  const tokenPayload = req.body;
+  const { pays, lieu, type_even, autres_info, expiration } = req.body;
+  if(pays.length < 3 || lieu.length < 3 || type_even.length < 3 || +expiration < 1 || +expiration > 90 )
+    return res.status(400).json({message: "plase check the data that you send as a payload for the rfid reader token"});
+
+  const tokenPayload = {pays, lieu, type_even, autres_info};
   try {
-    const token = jwt.sign(tokenPayload, <string> process.env.JWT_RFID_READER_SECRET_KEY, {expiresIn: "90d"});
+    const token = jwt.sign(tokenPayload, <string> process.env.JWT_RFID_READER_SECRET_KEY, {expiresIn: `${expiration}d`});
     res.status(200).json({token});
   } catch (error: any) {
     return next(new Error(error.message));
