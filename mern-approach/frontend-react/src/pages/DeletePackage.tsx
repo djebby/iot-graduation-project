@@ -3,8 +3,7 @@ import { useState, useRef } from "react";
 import AdminTopBar from "../Components/AdminTopBar";
 import cssClasses from "./DeletePackage.module.css";
 
-const token =
-  "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiYWRtaW4uMDAiLCJyb2xlIjoiYWRtaW4iLCJwb3N0X29mZmljZSI6IlRISUJBUiA5MDIyIiwiaWF0IjoxNjUyMjAyMDcxLCJleHAiOjE2NTIyMzgwNzF9.v6gOqbGC2fA18v0GsHzUxDaLW_Kb_w5m00WGCY6HeFQ";
+const token = "Bearer test.token...";
 
 const DeletePackage = () => {
   const [message, setMessage] = useState<{ type: string; text: string }>({

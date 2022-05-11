@@ -1,79 +1,124 @@
-import { useRef } from "react";
+import { useState, useRef } from "react";
 
 import AdminTopBar from "../Components/AdminTopBar";
 import cssClasses from "./AddPackage.module.css";
 
+let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiYWRtaW4uMDAiLCJyb2xlIjoiYWRtaW4iLCJwb3N0X29mZmljZSI6IlRISUJBUiA5MDIyIiwiaWF0IjoxNjUyMjgxNDQ5LCJleHAiOjE2NTIzMTc0NDl9.1lh7KhdsWxKD7trx6OEy2MGiFI8OKyMbIFjo4fj8gWI";
+
 const AddPackage = () => {
-  const refRfidtag = useRef<HTMLInputElement>(null);
-  const refPoids = useRef<HTMLInputElement>(null);
+  const [message, setMessage] = useState<{ type: string; text: string }>({ type: "", text: "", });
+  const refRfidtag = useRef<HTMLInputElement>(null); // mandatory field
+  const refPoids = useRef<HTMLInputElement>(null); // mandatory field
   const refContreRembou = useRef<HTMLInputElement>(null);
-  const refNomDest = useRef<HTMLInputElement>(null);
+  const refNomDest = useRef<HTMLInputElement>(null); // mandatory field
   const refRueDest = useRef<HTMLInputElement>(null);
-  const refPostDest = useRef<HTMLInputElement>(null);
+  const refPostDest = useRef<HTMLInputElement>(null); // mandatory field
   const refVilleDest = useRef<HTMLInputElement>(null);
-  const refGouvDest = useRef<HTMLInputElement>(null);
+  const refGouvDest = useRef<HTMLInputElement>(null); // mandatory field
   const refPaysDest = useRef<HTMLInputElement>(null);
   const refServDest = useRef<HTMLInputElement>(null);
   const refPersContDest = useRef<HTMLInputElement>(null);
   const refTelDest = useRef<HTMLInputElement>(null);
   const refAdrDest = useRef<HTMLInputElement>(null);
   const refEmailDest = useRef<HTMLInputElement>(null);
-  const refNomExp = useRef<HTMLInputElement>(null);
+  const refNomExp = useRef<HTMLInputElement>(null); // mandatory field
   const refDepExp = useRef<HTMLInputElement>(null);
   const refRueExp = useRef<HTMLInputElement>(null);
   const refVilleExp = useRef<HTMLInputElement>(null);
-  const refPostExp = useRef<HTMLInputElement>(null);
+  const refPostExp = useRef<HTMLInputElement>(null); // mandatory field
   const refPaysExp = useRef<HTMLInputElement>(null);
   const refTelExp = useRef<HTMLInputElement>(null);
   const refFaxExp = useRef<HTMLInputElement>(null);
-  const refPersExp = useRef<HTMLInputElement>(null);
+  const refPersExp = useRef<HTMLInputElement>(null); // mandatory field
   const refTelPersExp = useRef<HTMLInputElement>(null);
   const refFaxPersExp = useRef<HTMLInputElement>(null);
   const refEmailPersExp = useRef<HTMLInputElement>(null);
 
-  const onSubmitHandler = async () => {
-    // checking and sending the http POST Request to the backend : /ajouter
-    try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}ajouter`,{
-        method: 'POST',
-        body: JSON.stringify({
-          rfidTag: refRfidtag.current!.value,
-          poids: refPoids.current!.value,
-          contreRembou: refContreRembou.current!.value,
-          nomDest: refNomDest.current!.value,
-          rueDest: refRueDest.current!.value,
-          postDest: refPostDest.current!.value,
-          villeDest: refVilleDest.current!.value,
-          gouvDest: refGouvDest.current!.value,
-          paysDest: refPaysDest.current!.value,
-          servDest: refServDest.current!.value,
-          persContDest: refPersContDest.current!.value,
-          telDest: refTelDest.current!.value,
-          adrDest: refAdrDest.current!.value,
-          emailDest: refEmailDest.current!.value,
+  const resetMessageState = (timeOut: number = 3000) => {
+    setTimeout(() => { setMessage({ type: "", text: "" }); }, timeOut);
+  }
 
-          nomExp: refNomExp.current!.value,
-          depExp: refDepExp.current!.value,
-          rueExp: refRueExp.current!.value,
-          villeExp: refVilleExp.current!.value,
-          postExp: refPostExp.current!.value,
-          paysExp: refPaysExp.current!.value,
-          telExp: refTelExp.current!.value,
-          faxExp: refFaxExp.current!.value,
-          persExp: refPersExp.current!.value,
-          telPersExp: refTelPersExp.current!.value,
-          faxPersExp: refFaxPersExp.current!.value,
-          emailPersExp: refEmailPersExp.current!.value
-        }),
-        headers: {
-          'Content-Type': 'application/json',
-        }
+  const onSubmitHandler = async () => {
+    // checking mandatory fields
+    if (
+      refRfidtag.current!.value.length !== 8 ||
+      refPoids.current!.value.length === 0 ||
+      refNomDest.current!.value.length < 3 ||
+      refPostDest.current!.value.length < 3 ||
+      refGouvDest.current!.value.length < 3 ||
+      refNomExp.current!.value.length < 3 ||
+      refPostExp.current!.value.length < 3 ||
+      refPersExp.current!.value.length < 3
+    ) {
+      setMessage({
+        type: "danger",
+        text: "Il y a un champ obligatoire vide",
       });
+      resetMessageState(5000);
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}ajouter`,
+        {
+          method: "POST",
+          body: JSON.stringify({
+            rfidTag: refRfidtag.current!.value,
+            poids: refPoids.current!.value,
+            contreRembou: refContreRembou.current!.value,
+            nomDest: refNomDest.current!.value,
+            rueDest: refRueDest.current!.value,
+            postDest: refPostDest.current!.value,
+            villeDest: refVilleDest.current!.value,
+            gouvDest: refGouvDest.current!.value,
+            paysDest: refPaysDest.current!.value,
+            servDest: refServDest.current!.value,
+            persContDest: refPersContDest.current!.value,
+            telDest: refTelDest.current!.value,
+            adrDest: refAdrDest.current!.value,
+            emailDest: refEmailDest.current!.value,
+
+            nomExp: refNomExp.current!.value,
+            depExp: refDepExp.current!.value,
+            rueExp: refRueExp.current!.value,
+            villeExp: refVilleExp.current!.value,
+            postExp: refPostExp.current!.value,
+            paysExp: refPaysExp.current!.value,
+            telExp: refTelExp.current!.value,
+            faxExp: refFaxExp.current!.value,
+            persExp: refPersExp.current!.value,
+            telPersExp: refTelPersExp.current!.value,
+            faxPersExp: refFaxPersExp.current!.value,
+            emailPersExp: refEmailPersExp.current!.value,
+          }),
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer "+token
+          },
+        }
+      );
       const data = await response.json();
+      if(response.ok) {
+        setMessage({
+          type: "success",
+          text: data.message,
+        });
+        resetMessageState();
+      } else {
+        setMessage({
+          type: "danger",
+          text: data.message,
+        });
+        resetMessageState(5000);
+      }
       console.log(data);
-      
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      setMessage({
+        type: "danger",
+        text: error.message,
+      });
+      resetMessageState(5000);
     }
   };
 
@@ -84,12 +129,13 @@ const AddPackage = () => {
         <label htmlFor="rfidtag">RFID TAG *</label>
         <input
           ref={refRfidtag}
+          maxLength={8}
           type="text"
           id="rfidtag"
           className="form-control"
           placeholder="RFID TAG"
         />
-        <label htmlFor="poids">Poids (Kg): </label>
+        <label htmlFor="poids">Poids (Kg) * </label>
         <input
           ref={refPoids}
           type="text"
@@ -288,6 +334,11 @@ const AddPackage = () => {
             className="form-control"
             id="emailPersExp"
           />
+          {message.text.length > 0 && (
+          <div className={"my-3 alert alert-" + message.type} role="alert">
+            {message.text}
+          </div>
+          )}
           <button
             onClick={onSubmitHandler}
             className="btn btn-success btn-lg my-3"
