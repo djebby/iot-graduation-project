@@ -25,7 +25,7 @@ const TrackingInput = () => {
 
   return (
     <div className={cssClasses.tracking}>
-      <Link className={cssClasses.link} to="/login"><button className="btn btn-primary">admin</button></Link>
+      <Link className={cssClasses.link} to="/login"><button className="btn btn-primary">Administrateurs ?</button></Link>
       <img src={logo} alt="poste logo" width="150" />
       <h3>Suivez vos envois Rapid-Poste</h3>
       <label htmlFor="tag" className="form-label">
