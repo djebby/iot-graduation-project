@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
+import AdminTopBar from "../Components/AdminTopBar";
 import ResponseBox from "../Components/ResponseBox";
 import getPassword from "../util/generateRandomPassword";
 import cssClasses from "./Dashboard.module.css";
@@ -162,6 +163,9 @@ const Dashboard = () => {
   };
 
   return (
+    <>
+    <AdminTopBar />
+    <br />
     <div className={cssClasses.dashboard}>
       <div className={cssClasses.token}>
         <h5>générer un jeton pour un nouveau lecteur rfid </h5>
@@ -317,6 +321,7 @@ const Dashboard = () => {
         )}
       </div>
     </div>
+    </>
   );
 };
 

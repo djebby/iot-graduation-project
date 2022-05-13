@@ -1,6 +1,7 @@
-import React from 'react';
-import {Routes, Route} from "react-router-dom";
+import { useState, useEffect } from 'react';
+import {Routes, Route, Navigate} from "react-router-dom";
 
+import { AuthContext } from './context/auth-context';
 import TrackingInput from './Components/TrackingInput';
 import Login from "./pages/Login";
 import Dashboard from './pages/Dashboard';
@@ -11,16 +12,50 @@ import PackageMovment from './pages/PackageMovment';
 import './App.css';
 
 const  App: React.FC = (): JSX.Element => {
+  const [token, setToken] = useState<string>('');
+  const [howIsLoggedIn, setHowIsLoggedIn] = useState<string>('');
+
+  const login = (token: string, role: string, expirationTime: number) => {
+    // set the token with 
+    setHowIsLoggedIn(role);
+    setToken('Bearer '+token);
+    localStorage.setItem('adminData', JSON.stringify({
+      role,
+      token,
+      expirationTime
+    }));
+  }
+
+  const logout = () => {
+    // clear the token value 
+    setHowIsLoggedIn('');
+    setToken('');
+    console.log('logout');
+    localStorage.removeItem('adminData');
+  }
+
+  useEffect(()=>{
+    const storedData = JSON.parse(localStorage.getItem('adminData') as string);
+    if(storedData !== null){
+      login(storedData['token'], storedData['role'], storedData['expirationTime'] as number);
+    }
+  }, []);
+  
   return (
+    <AuthContext.Provider value={{howIsLoggedIn,
+    token,
+    login,
+    logout}}>
     <Routes>
       <Route path="/" element={<TrackingInput />} />
       <Route path="/colis/:colid" element={<PackageMovment />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/ajouter" element={<AddPackage />} />
-      <Route path="/effacer" element={<DeletePackage />} />
+      <Route path="/login" element={howIsLoggedIn.length === 0 ? <Login /> : <Navigate to='/' />} />
+      <Route path="/dashboard" element={howIsLoggedIn === 'super-admin' ?  <Dashboard /> : <Navigate to='/' />} />
+      <Route path="/ajouter" element={ howIsLoggedIn === 'admin' ? <AddPackage /> : <Navigate to='/' /> } />
+      <Route path="/effacer" element={ howIsLoggedIn === 'admin' ?  <DeletePackage /> : <Navigate to='/' />} />
       <Route path="*" element={<h2>404 PAGE NOT FOUND !</h2>} />
     </Routes>
+    </AuthContext.Provider>
   );
 }
 

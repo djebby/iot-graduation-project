@@ -1,5 +1,7 @@
-import {useState, useRef} from "react";
+import {useState, useRef, useContext} from "react";
 import { useNavigate } from "react-router-dom";
+
+import { AuthContext } from "../context/auth-context";
 
 import logo from "../images/logo_poste.png";
 import cssClasses from "./Login.module.css";
@@ -8,6 +10,7 @@ const Login = () => {
   const passwordRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const authCtx = useContext(AuthContext);
 
   const resetErrorMessageState = (timeOut: number = 3000) => {
     setTimeout(() => {
@@ -16,6 +19,7 @@ const Login = () => {
   }
 
   const loginHandler = async () => {
+
 
     if(adminRef.current!.value.length < 4 || passwordRef.current!.value.length < 4) {
       setErrorMessage("nom d'administrateur ou mot de passe invalide");
@@ -37,6 +41,8 @@ const Login = () => {
 
       const data = await response.json();
       if(response.ok){
+        console.log(data);
+        authCtx.login(data.token, data.role, +data.expirationTime);
         if(data.role === 'admin')
           navigate("/ajouter");
         else if (data.role === 'super-admin')
