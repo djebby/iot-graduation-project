@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useContext, useRef, useState } from "react";
 
+import { AuthContext } from "../context/auth-context";
 import AdminTopBar from "../Components/AdminTopBar";
 import ResponseBox from "../Components/ResponseBox";
 import getPassword from "../util/generateRandomPassword";
@@ -31,6 +32,8 @@ const Dashboard = () => {
   const refExpTime = useRef<HTMLInputElement>(null);
   const refOtherInfo = useRef<HTMLInputElement>(null);
 
+  const authCtx = useContext(AuthContext);
+
   const generateUniqueNameHandler = () => {
     refNewAdminName.current!.value = "admin." + new Date().getTime();
   };
@@ -39,9 +42,6 @@ const Dashboard = () => {
     refAdminPassword.current!.value = getPassword(25);
     setPasswordVisibility("text");
   };
-
-  let token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoic3VwZXIuYWRtaW4uMDAiLCJyb2xlIjoic3VwZXItYWRtaW4iLCJwb3N0X29mZmljZSI6IkNFTlRSQUwgQURNSU5JU1RSQVRJT04iLCJpYXQiOjE2NTIxMTU1NzUsImV4cCI6MTY1MjE1MTU3NX0.eZi2u66AmjMtOqJS2fKmFTz7aKNoab_pqN7l4MT5Uws";
 
   const onAddAdminHandler = async () => {
     // will send post request to the backend
@@ -52,8 +52,7 @@ const Dashboard = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: "Bearer " + token,
-            // "Authorization": "Bearer the.token.that.will.be.stored.with.redux..."
+            Authorization: authCtx.token,
           },
           body: JSON.stringify({
             name: refNewAdminName.current!.value,
@@ -88,14 +87,11 @@ const Dashboard = () => {
           message: data.message,
         });
       }
-
-      console.log(response.ok, data);
     } catch (error: any) {
       setResponseTypeAndMessage({
         type: "error",
         message: error.message,
       });
-      console.log(error);
     } finally {
       setResponseBoxVisibility(true);
     }
@@ -112,7 +108,7 @@ const Dashboard = () => {
           method: "DELETE",
           headers: {
             "Content-Type": "application/json",
-            Authorization: "Bearer " + token,
+            Authorization: authCtx.token
           },
         }
       );
@@ -128,7 +124,6 @@ const Dashboard = () => {
     } finally {
       setResponseBoxVisibility(true);
     }
-    console.log("delete => " + refRegisteredAdminName.current!.value);
   };
 
   const onCreateTokenHandler = async () => {
@@ -139,7 +134,7 @@ const Dashboard = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: "Bearer " + token,
+            Authorization: authCtx.token
           },
           body: JSON.stringify({
             pays: refCountry.current!.value,
@@ -152,7 +147,7 @@ const Dashboard = () => {
       );
       const data = await response.json();
       if (response.ok) {
-      setJwtError({state: false, message: ""});
+        setJwtError({state: false, message: ""});
         setRfidReaderJWT(data.token);
       } else {
         setJwtError({state: true, message: data.message});

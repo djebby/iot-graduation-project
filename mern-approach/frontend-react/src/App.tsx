@@ -14,11 +14,12 @@ import './App.css';
 const  App: React.FC = (): JSX.Element => {
   const [token, setToken] = useState<string>('');
   const [howIsLoggedIn, setHowIsLoggedIn] = useState<string>('');
+  const [tokenExpTime, setTokenExpTime] = useState<number | null>(null);
 
   const login = (token: string, role: string, expirationTime: number) => {
-    // set the token with 
     setHowIsLoggedIn(role);
     setToken('Bearer '+token);
+    setTokenExpTime(expirationTime);
     localStorage.setItem('adminData', JSON.stringify({
       role,
       token,
@@ -26,11 +27,12 @@ const  App: React.FC = (): JSX.Element => {
     }));
   }
 
+
   const logout = () => {
     // clear the token value 
     setHowIsLoggedIn('');
     setToken('');
-    console.log('logout');
+    setTokenExpTime(null);
     localStorage.removeItem('adminData');
   }
 
@@ -40,6 +42,14 @@ const  App: React.FC = (): JSX.Element => {
       login(storedData['token'], storedData['role'], storedData['expirationTime'] as number);
     }
   }, []);
+
+  if (tokenExpTime !== null && new Date().getTime() > tokenExpTime!) {
+    logout();
+  } else if (tokenExpTime !== null) {
+    setTimeout(() => {
+      logout();
+    }, tokenExpTime! - new Date().getTime());
+  }
   
   return (
     <AuthContext.Provider value={{howIsLoggedIn,

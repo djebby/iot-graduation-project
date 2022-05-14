@@ -3,7 +3,7 @@ import Package from "../models/package-model";
 
 //----------------------------------------------------------------------------------------------GET => /api/:rfid (no authorization required)
 export const getPackageMovementHistory: RequestHandler = async (req, res, next) => {
-  const rfid = req.params.rfid;
+  const rfid = req.params.rfid.toLowerCase();
   try {
     const packageMovement = await Package.findOne({rfidTag: rfid}, 'movementHistory');
     if(packageMovement === null){
@@ -50,7 +50,7 @@ export const createPackage: RequestHandler = async (req: any, res, next) => {
 
   try {
     const newPackage = new Package({
-      rfidTag,
+      rfidTag: rfidTag.toLowerCase(),
       poids,
       contreRembou,
       nomDest,
@@ -86,7 +86,7 @@ export const createPackage: RequestHandler = async (req: any, res, next) => {
       autres_info: "autres information...",
     });
     await newPackage.save();
-    res.status(201).json({message: `package ${rfidTag} addded successffully`});
+    res.status(201).json({message: `package ${rfidTag.toLowerCase()} addded successffully`});
 
   } catch (error: any) {
     // throw an error to the error middleware
@@ -96,7 +96,7 @@ export const createPackage: RequestHandler = async (req: any, res, next) => {
 
 //----------------------------------------------------------------------------------------------POST => /api/ajouter_movement/:rfid (after rfid reader authorization)
 export const pushPackageMovement: RequestHandler = async (req: any, res, next) => {
-  const rfid = req.params.rfid;
+  const rfid = req.params.rfid.toLowerCase();
   try {
     let colis = await Package.findOne({rfidTag: rfid});
     if(colis === null){
@@ -119,7 +119,7 @@ export const pushPackageMovement: RequestHandler = async (req: any, res, next) =
 
 //----------------------------------------------------------------------------------------------DELETE => /api/package/:rfid (after normal admin authorization)
 export const deletePackage: RequestHandler = async (req, res, next) => {
-  const rfid = req.params.rfid;
+  const rfid = req.params.rfid.toLowerCase();
   try {
     if(!(await Package.findOne({rfidTag: rfid}))) 
       return res.status(404).json({message: `sorry no package founded with this id ${rfid}`});

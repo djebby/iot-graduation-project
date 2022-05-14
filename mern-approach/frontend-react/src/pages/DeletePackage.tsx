@@ -1,9 +1,9 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useContext } from "react";
 
+import { AuthContext } from "../context/auth-context";
 import AdminTopBar from "../Components/AdminTopBar";
 import cssClasses from "./DeletePackage.module.css";
 
-const token = "Bearer test.token...";
 
 const DeletePackage = () => {
   const [message, setMessage] = useState<{ type: string; text: string }>({
@@ -11,6 +11,7 @@ const DeletePackage = () => {
     text: "",
   });
   const refRfidTag = useRef<HTMLInputElement>(null);
+  const authCtx = useContext(AuthContext);
 
   const resetMessageState = (timeOut: number = 3000) => {
     setTimeout(() => {
@@ -35,7 +36,7 @@ const DeletePackage = () => {
         }`,
         {
           method: "DELETE",
-          headers: { Authorization: token }, // Of course the value of the token will come later from redux (this is just for temporary testing)
+          headers: { Authorization: authCtx.token }, // Of course the value of the token will come later from redux (this is just for temporary testing)
         }
       );
       const data = await response.json();

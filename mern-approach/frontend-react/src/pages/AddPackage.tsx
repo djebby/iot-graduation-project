@@ -1,9 +1,9 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useContext } from "react";
 
+import { AuthContext } from "../context/auth-context";
 import AdminTopBar from "../Components/AdminTopBar";
 import cssClasses from "./AddPackage.module.css";
 
-let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiYWRtaW4uMDAiLCJyb2xlIjoiYWRtaW4iLCJwb3N0X29mZmljZSI6IlRISUJBUiA5MDIyIiwiaWF0IjoxNjUyMjgxNDQ5LCJleHAiOjE2NTIzMTc0NDl9.1lh7KhdsWxKD7trx6OEy2MGiFI8OKyMbIFjo4fj8gWI";
 
 const AddPackage = () => {
   const [message, setMessage] = useState<{ type: string; text: string }>({ type: "", text: "", });
@@ -33,6 +33,8 @@ const AddPackage = () => {
   const refTelPersExp = useRef<HTMLInputElement>(null);
   const refFaxPersExp = useRef<HTMLInputElement>(null);
   const refEmailPersExp = useRef<HTMLInputElement>(null);
+
+  const authCtx = useContext(AuthContext);
 
   const resetMessageState = (timeOut: number = 3000) => {
     setTimeout(() => { setMessage({ type: "", text: "" }); }, timeOut);
@@ -94,7 +96,7 @@ const AddPackage = () => {
           }),
           headers: {
             "Content-Type": "application/json",
-            Authorization: "Bearer "+token
+            Authorization: authCtx.token
           },
         }
       );
