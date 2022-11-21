@@ -15,3 +15,6 @@ mern-approach/requests.rest
 
 # rfid reader's token
 mern-approach/frontend-rfid-reader/json-web-token.local.h
+
+# old and bad approach
+old-approach
